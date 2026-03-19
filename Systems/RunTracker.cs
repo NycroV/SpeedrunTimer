@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -98,7 +99,7 @@ public class RunTracker : ModSystem
     }
 
     // Re-loads the last active run, if there was one.
-    public override void Load() => TryLoadActiveRun();
+    public override void PostSetupContent() => TryLoadActiveRun();
 
     internal static void TryLoadActiveRun()
     {
@@ -108,7 +109,7 @@ public class RunTracker : ModSystem
         string activeRun = File.ReadAllText(ActiveRunFilePath);
         string[] runParts = activeRun.Split('\n');
 
-        if (runParts.Length != 3)
+        if (runParts.Length != 4)
             return;
 
         if (!DateTime.TryParse(runParts[1], out var runStart))
@@ -117,9 +118,32 @@ public class RunTracker : ModSystem
         if (!uint.TryParse(runParts[2], out var frameCounter))
             return;
 
+        List<RunSplit> runSplits = [];
+
+        foreach (string runSplit in runParts[3].Split('/'))
+        {
+            var splitParts = runSplit.Split('|');
+
+            if (splitParts.Length != 3 || !SpeedrunTimer.AllSplits.TryGetValue(splitParts[0], out var split))
+                return;
+
+            if (!uint.TryParse(splitParts[1], out var runTime))
+                return;
+
+            if (!uint.TryParse(splitParts[2], out var splitTime))
+                return;
+
+            runSplits.Add(new(split, runTime, splitTime));
+        }
+
         RunCategory = runParts[0];
         RTA_RunStart = runStart;
         IGT_FrameCounter = frameCounter;
+
+        AvailableSplits.AddRange(SpeedrunTimer.AllSplits.Values);
+
+        foreach (var runSplit in runSplits)
+            runSplit.Register();
     }
 
     // Saves the currently active run, if there is one.
@@ -135,7 +159,13 @@ public class RunTracker : ModSystem
             return;
         }
 
-        string activeRun = string.Join('\n', RunCategory, RTA_RunStart.ToString(), IGT_FrameCounter.ToString());
+        var stringSplits = CurrentSplits.Select(s => string.Join('|',
+            SpeedrunTimer.AllSplits.Inverse[s.Split],
+            s.RunTime.ToString(),
+            s.SplitTime.ToString()));
+
+        string splitsLine = string.Join('/', stringSplits);
+        string activeRun = string.Join('\n', RunCategory, RTA_RunStart.ToString(), IGT_FrameCounter.ToString(), splitsLine);
         string directory = Path.GetDirectoryName(ActiveRunFilePath)!;
 
         if (!Directory.Exists(directory))

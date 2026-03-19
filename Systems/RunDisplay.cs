@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace SpeedrunTimer.Systems
 {
@@ -17,6 +18,11 @@ namespace SpeedrunTimer.Systems
         {
             orig(self, gameTime);
             // TODO: Draw run start/cancel buttons
+        }
+
+        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
+        {
+            // TODO: Draw timer display
         }
     }
 }

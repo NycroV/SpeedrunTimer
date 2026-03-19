@@ -14,17 +14,17 @@ public class SpeedrunTimer : Mod
 	/// <summary>
 	/// The collection of all registered splits from all mods.
 	/// </summary>
-	public static readonly Dictionary<string, Split> AllSplits = [];
+	public static readonly BidirectionalDictionary<string, Split> AllSplits = [];
 
 	/// <summary>
 	/// The collection of all registered run categories from all mods.
 	/// </summary>
-    public static readonly Dictionary<string, Category> AllCategories = [];
+    public static readonly BidirectionalDictionary<string, Category> AllCategories = [];
 
 	// Load vanilla splits and categories
     public override void PostSetupContent()
     {
-        AllSplits.AddRange(new() {
+        AllSplits.AddRange(new Dictionary<string, Split>() {
             ["KingSlime"] = new(GetLocalizationKey("Splits.KingSlime"), null!, () => NPC.downedSlimeKing),
             ["EyeOfCthulhu"] = new(GetLocalizationKey("Splits.EyeOfCthulhu"), null!, () => NPC.downedBoss1),
             ["EvilBoss"] = new(GetLocalizationKey("Splits.EvilBoss"), null!, () => NPC.downedBoss2),
@@ -49,7 +49,7 @@ public class SpeedrunTimer : Mod
 			["AllBosses"] = new(GetLocalizationKey("Splits.AllBosses"), null!, () => NPC.downedMoonlord) // TODO: All bosses
         });
 
-		AllCategories.AddRange(new() {
+		AllCategories.AddRange(new Dictionary<string, Category>() {
 			["Any%"] = new(GetLocalizationKey("Categories.AnyPercent"), GetSplit("MoonLord")),
 			["AllBosses%"] = new(GetLocalizationKey("Categories.AllBosses"), GetSplit("AllBosses"))
 		});

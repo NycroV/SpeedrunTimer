@@ -41,5 +41,20 @@ Configs: {
 			Label: Speedrun U I Scale
 			Tooltip: ""
 		}
+
+		Headers: {
+			TODO-MainConfig: T O D O- Main Config Header
+			TODO-DisplayConfig: T O D O- Display Config Header
+		}
+
+		ShowOnTop: {
+			Label: Show On Top
+			Tooltip: ""
+		}
+
+		SpeedrunUIPosY: {
+			Label: Speedrun U I Pos Y
+			Tooltip: ""
+		}
 	}
 }

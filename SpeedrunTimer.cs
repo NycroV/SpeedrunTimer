@@ -16,12 +16,12 @@ public class SpeedrunTimer : Mod
     /// <summary>
     /// The collection of all registered splits from all mods.
     /// </summary>
-    public static readonly Dictionary<string, Split> AllSplits = new();
+    public static readonly BidirectionalDictionary<string, Split> AllSplits = new();
 
     /// <summary>
     /// The collection of all registered run categories from all mods.
     /// </summary>
-    public static readonly Dictionary<string, Category> AllCategories = new();
+    public static readonly BidirectionalDictionary<string, Category> AllCategories = new();
 
     // Load vanilla splits and categories
     public override void PostSetupContent()

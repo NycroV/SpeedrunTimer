@@ -160,7 +160,7 @@ public class RunTracker : ModSystem
         }
 
         var stringSplits = CurrentSplits.Select(s => string.Join('|',
-            SpeedrunTimer.AllSplits.ToDictionary(kvp => kvp.Value, kvp => kvp.Key)[s.Split],
+            SpeedrunTimer.AllSplits.Inverse[s.Split],
             s.RunTime.ToString(),
             s.SplitTime.ToString()));
 

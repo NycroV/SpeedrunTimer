@@ -16,7 +16,7 @@ public class SpeedrunConfig : ModConfig
     [JsonIgnore]
     public Vector2 SpeedrunUIPos => new(SpeedrunUIPosX, SpeedrunUIPosY);
 
-    [Header("TODO-MainConfig")]
+    [Header("MainConfig")]
     [DefaultValue(6)]
     public int SplitsToShow { get; set; }
 
@@ -29,7 +29,7 @@ public class SpeedrunConfig : ModConfig
     [DefaultValue(false)]
     public bool ShowOnTop { get; set; }
 
-    [Header("TODO-DisplayConfig")]
+    [Header("DisplayConfig")]
     [DefaultValue(true)]
     public bool LockSpeedrunUIPos { get; set; }
 

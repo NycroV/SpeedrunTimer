@@ -74,7 +74,7 @@ public class RunTracker : ModSystem
     public override void Load()
     {
         MonoModHooks.Add(typeof(ConfigManager).GetMethod("FinishSetup", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static, Type.EmptyTypes), ValidateCategoryTypes);
-        Main.instance.Exiting += (_, _)=> TrySaveActiveRun();
+        Main.instance.Exiting += (_, _) => TrySaveActiveRun();
     }
 
     // Saves the currently active run, if there is one.

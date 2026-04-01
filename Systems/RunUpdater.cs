@@ -1,12 +1,5 @@
-﻿using SpeedrunTimer.Config;
-using SpeedrunTimer.DataStructures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Terraria;
-using Terraria.Localization;
+﻿using System;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 
 namespace SpeedrunTimer.Systems;
 

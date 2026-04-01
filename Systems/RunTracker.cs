@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Terraria;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
@@ -65,14 +64,18 @@ public class RunTracker : ModSystem
     /// </summary>
     public static CompletedRun? LastCompletedRun { get; private set; } = null;
 
-    internal static string ActiveRunFilePath => Path.Combine(Main.SavePath, "SpeedrunTimer", "ActiveRun.txt");
+    internal static readonly string ActiveRunFilePath = Path.Combine(Main.SavePath, "SpeedrunTimer", "ActiveRun.txt");
 
     // Re-loads the last active run, if there was one.
     public override void PostSetupContent() => TryLoadActiveRun();
 
     // Verifies that the last active run type is available, and that the configured default run type is valid
 
-    public override void Load() => MonoModHooks.Add(typeof(ConfigManager).GetMethod("FinishSetup", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static, Type.EmptyTypes), ValidateCategoryTypes);
+    public override void Load()
+    {
+        MonoModHooks.Add(typeof(ConfigManager).GetMethod("FinishSetup", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static, Type.EmptyTypes), ValidateCategoryTypes);
+        Main.instance.Exiting += (_, _)=> TrySaveActiveRun();
+    }
 
     // Saves the currently active run, if there is one.
     public override void Unload() => TrySaveActiveRun();
@@ -135,7 +138,7 @@ public class RunTracker : ModSystem
 
         List<RunSplit> runSplits = [];
 
-        foreach (string runSplit in runParts[3].Split('/'))
+        foreach (string runSplit in runParts[3].Split('/', StringSplitOptions.RemoveEmptyEntries))
         {
             var splitParts = runSplit.Split('|');
 
@@ -193,9 +196,9 @@ public class RunTracker : ModSystem
         if (RunCategory is not null && !SpeedrunTimer.AllCategories.ContainsKey(RunCategory))
             RunCategory = null;
 
-        if (!SpeedrunTimer.AllCategories.Values.Any(c => Language.GetTextValue(c.LocalizationKey) == SpeedrunConfig.Instance.DefaultRunCategory))
+        if (!SpeedrunTimer.AllCategories.ContainsKey(SpeedrunConfig.Instance.DefaultRunCategory))
         {
-            SpeedrunConfig.Instance.DefaultRunCategory = Language.GetTextValue(SpeedrunTimer.AllCategories.First().Value.LocalizationKey);
+            SpeedrunConfig.Instance.DefaultRunCategory = SpeedrunTimer.AllCategories.First().Key;
             SpeedrunConfig.Instance.SaveChanges();
         }
 

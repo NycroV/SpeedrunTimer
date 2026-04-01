@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Terraria.Localization;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
@@ -22,12 +21,8 @@ namespace SpeedrunTimer.Config
         public override void OnBind()
         {
             base.OnBind();
-
-            Options = SpeedrunTimer.AllCategories.Values.Select(c => Language.GetTextValue(c.LocalizationKey)).ToArray();
-            TextDisplayFunction = () => MemberInfo.Name + ": " + GetValue();
-
-            if (Label != null)
-                TextDisplayFunction = () => Label + ": " + GetValue();
+            Options = [..SpeedrunTimer.AllCategories.Keys];
+            TextDisplayFunction = () => Label + ": " + Language.GetTextValue(SpeedrunTimer.AllCategories[GetValue()].LocalizationKey);
         }
 
         private void SetValue(int index)

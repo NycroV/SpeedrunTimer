@@ -190,7 +190,7 @@ public class RunDisplay : ModSystem
 
             for (int i = 0; i < SpeedrunTimer.AllCategories.Count; i++)
             {
-                if (SpeedrunConfig.Instance.DefaultRunCategory != Language.GetTextValue(SpeedrunTimer.AllCategories.ElementAt(i).Value.LocalizationKey))
+                if (SpeedrunConfig.Instance.DefaultRunCategory != SpeedrunTimer.AllCategories.ElementAt(i).Key)
                     continue;
 
                 startingRunType = i;

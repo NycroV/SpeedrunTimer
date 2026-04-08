@@ -48,7 +48,25 @@ public class SpeedrunTimer : Mod
             ["VortexPillar"] = new(GetLocalizationKey("Splits.VortexPillar"), null!, () => NPC.downedTowerVortex),
             ["StardustPillar"] = new(GetLocalizationKey("Splits.StardustPillar"), null!, () => NPC.downedTowerStardust),
             ["MoonLord"] = new(GetLocalizationKey("Splits.MoonLord"), null!, () => NPC.downedMoonlord),
-            ["AllBosses"] = new(GetLocalizationKey("Splits.AllBosses"), null!, () => NPC.downedMoonlord) // TODO: All bosses
+
+            ["AllBosses"] = new(GetLocalizationKey("Splits.AllBosses"), null!, () =>
+                NPC.downedMoonlord &&
+                NPC.downedAncientCultist &&
+                NPC.downedEmpressOfLight &&
+                NPC.downedFishron &&
+                NPC.downedGolemBoss &&
+                NPC.downedPlantBoss &&
+                NPC.downedMechBoss3 &&
+                NPC.downedMechBoss2 &&
+                NPC.downedMechBoss1 &&
+                NPC.downedQueenSlime &&
+                Main.hardMode &&
+                NPC.downedBoss3 &&
+                NPC.downedDeerclops &&
+                NPC.downedQueenBee &&
+                NPC.downedBoss2 &&
+                NPC.downedBoss1 &&
+                NPC.downedSlimeKing)
         });
 
         AllCategories.AddRange(new Dictionary<string, Category>()

@@ -293,15 +293,17 @@ public class RunDisplay : ModSystem
             spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.White, Color.Black, splitTime, 1f, alignment: Utils.TextAlignment.Right);
         }
 
-        int splitCount = RunTracker.LastCompletedRun?.Splits.Count ?? RunTracker.CurrentSplits?.Count ?? 0;
+        int splitCount = Math.Min(splits, RunTracker.LastCompletedRun?.Splits.Count ?? RunTracker.CurrentSplits?.Count ?? 0);
+        RunSplit[] runSplits = splitCount > 0 ? [..RunTracker.LastCompletedRun?.Splits.TakeLast(splitCount) ?? RunTracker.CurrentSplits.TakeLast(splitCount)] : [];
+
         Rectangle splitBox = titleBox.CookieCutter(new(0f, 2.5f), Vector2.One);
-        RunSplit? split = splitCount > 0 ? (RunTracker.LastCompletedRun?.Splits[^1] ?? RunTracker.CurrentSplits[^1]) : null;
+        RunSplit? split = splitCount > 0 ? runSplits[0] : null;
         DrawSplit(splitBox, split);
 
         for (int i = 1; i < splits; i++)
         {
             splitBox = splitBox.CookieCutter(new(0f, 2.5f), Vector2.One);
-            split = splitCount > i ? (RunTracker.LastCompletedRun?.Splits[^(i + 1)] ?? RunTracker.CurrentSplits[^(i + 1)]) : null;
+            split = splitCount > i ? runSplits[i] : null;
             DrawSplit(splitBox, split);
         }
 

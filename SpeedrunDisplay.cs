@@ -75,7 +75,7 @@ public class SpeedrunDisplay : Mod
         AllCategories.AddRange(new Dictionary<string, Category>()
         {
             ["Any%"] = new(GetLocalizationKey("Categories.AnyPercent"), GetSplit("MoonLord")),
-            ["AllBosses%"] = new(GetLocalizationKey("Categories.AllBosses"), GetSplit("AllBosses"))
+            ["AllBosses%"] = new(GetLocalizationKey("Categories.AllBossesPercent"), GetSplit("AllBosses"))
         });
     }
 

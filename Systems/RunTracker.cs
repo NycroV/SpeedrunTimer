@@ -123,6 +123,70 @@ public class RunTracker : ModSystem
         AvailableSplits.Clear();
     }
 
+    internal static void ExportLastRun()
+    {
+        if (nativefiledialog.NFD_SaveDialog("txt", null, out string filePath) != nativefiledialog.nfdresult_t.NFD_OKAY)
+            return;
+
+        if (Path.GetExtension(filePath) != ".txt")
+            filePath += ".txt";
+
+        var run = LastCompletedRun.Value;
+        string text = $"{run.Category.LocalizationKey.Fetch()}\n------\n";
+
+        int splitCount = run.Splits.Count;
+        int longestNameLength = 0;
+        int longestSplitLength = 0;
+        int longestRunLength = 0;
+
+        string[] splits = [.. run.Splits.Select(s => s.Split.LocalizationKey.Fetch())];
+        string[] splitTimes = [.. run.Splits.Select(s => TimeSpan.FromSeconds(s.SplitTime / 60f).Format(fractionalSeconds: true))];
+        string[] runTimes = [.. run.Splits.Select(s => TimeSpan.FromSeconds(s.RunTime / 60f).Format(fractionalSeconds: true))];
+
+        for (int i = 0; i < splitCount; i++)
+        {
+            if (splits[i].Length > longestNameLength)
+            {
+                longestNameLength = splits[i].Length;
+
+                for (int j = 0; j < i; j++)
+                    splits[j] = splits[j] + new string(' ', longestNameLength - splits[j].Length);
+            }
+
+            else if (splits[i].Length < longestNameLength)
+                splits[i] = splits[i] + new string(' ', longestNameLength - splits[i].Length);
+
+
+            if (splitTimes[i].Length > longestSplitLength)
+            {
+                longestSplitLength = splitTimes[i].Length;
+
+                for (int j = 0; j < i; j++)
+                    splitTimes[j] = new string(' ', longestSplitLength - splitTimes[i].Length) + splitTimes[j];
+            }
+
+            else if (splitTimes[i].Length < longestSplitLength)
+                splitTimes[i] = splitTimes[i] + new string(' ', longestSplitLength - splitTimes[i].Length);
+
+            if (runTimes[i].Length > longestRunLength)
+            {
+                longestRunLength = runTimes[i].Length;
+
+                for (int j = 0; j < i; j++)
+                    runTimes[j] = new string(' ', longestRunLength - runTimes[i].Length) + runTimes[j];
+            }
+
+            else if (runTimes[i].Length < longestRunLength)
+                runTimes[i] = runTimes[i] + new string(' ', longestRunLength - runTimes[i].Length);
+        }
+
+        for (int i = 0; i < splitCount; i++)
+            text += $"{splits[i]}  -  {splitTimes[i]}  |  {runTimes[i]}\n";
+
+        text += $"------\n{run.IGT.Format(fractionalSeconds: true)} IGT  --  {run.RTA.Format(fractionalSeconds: true)} RTA";
+        File.WriteAllText(filePath, text);
+    }
+
     internal static void TryLoadActiveRun()
     {
         if (!File.Exists(ActiveRunFilePath))

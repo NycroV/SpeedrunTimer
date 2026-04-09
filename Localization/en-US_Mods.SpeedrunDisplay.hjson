@@ -1,6 +1,6 @@
 Categories: {
 	AnyPercent: Vanilla: Any%
-	AllBosses: Vanilla: AllBosses%
+	AllBossesPercent: Vanilla: AllBosses%
 }
 
 Splits: {
@@ -45,31 +45,53 @@ UI: {
 
 Configs: {
 	SpeedrunConfig: {
+		DisplayName: Speedrun Timer Config
+
 		Headers: {
+			MainConfig: Main Config
+			DisplayConfig: Display Config
 		}
 
 		SplitsToShow: {
+			Label: Splits to Show
+			Tooltip: The number of splits to display in the speedrun timer UI at one time
 		}
 
 		DefaultRunCategory: {
+			Label: Default Run Category
+			Tooltip: The default category to use when starting new runs
 		}
 
 		AutoRestart: {
+			Label: Auto Restart
+			Tooltip: Automatically start a new run when entering a new world with a new character
 		}
 
 		ShowOnTop: {
+			Label: Show On Top
+			Tooltip: Show the speedrun timer UI above other UI elements like the minimap
 		}
 
 		LockSpeedrunUIPos: {
+			Label: Lock Speedrun UI Position
+			Tooltip: Prevents moving the speedrun timer UI with the mouse
 		}
 
 		SpeedrunUIScale: {
+			Label: Speedrun UI Scale
+			Tooltip: The scale at which to draw the speedrun timer UI
 		}
 
 		SpeedrunUIPosX: {
+			Label: Speedrun UI X Position
+			Tooltip: The position along the X axis of the screen to place the speedrun timer UI
 		}
 
 		SpeedrunUIPosY: {
+			Label: Speedrun UI Y Position
+			Tooltip: The position along the Y axis of the screen to place the speedrun timer UI
 		}
 	}
 }
+
+Keybinds.ToggleSpeedrunUI.DisplayName: Toggle Speedrun UI

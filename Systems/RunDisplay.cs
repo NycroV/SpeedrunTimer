@@ -8,6 +8,7 @@ using SpeedrunTimer.DataStructures;
 using SpeedrunTimer.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Terraria;
@@ -135,7 +136,7 @@ public class RunDisplay : ModSystem
             bool nextHovered = nextType.Contains(mousePos);
 
             string runCategory = SpeedrunTimer.AllCategories.ElementAt(startingRunType).Key;
-            Main.spriteBatch.DrawOutlinedStringInRectangle(runType, JetbrainsMono, Color.White, Color.Black, Language.GetTextValue(SpeedrunTimer.AllCategories[runCategory].LocalizationKey));
+            Main.spriteBatch.DrawOutlinedStringInRectangle(runType, JetbrainsMono, Color.White, Color.Black, SpeedrunTimer.AllCategories[runCategory].LocalizationKey.Fetch());
 
             Main.spriteBatch.DrawRectangle(startSelectedRun, startSelectedHovered ? Color.Yellow : Color.LightGray);
             Main.spriteBatch.DrawOutlinedStringInRectangle(startSelectedRun, JetbrainsMono, startSelectedHovered ? Color.Yellow : Color.White, Color.Black, UIText("Start"));
@@ -177,12 +178,25 @@ public class RunDisplay : ModSystem
         }
 
         Rectangle startNewRun = timerUI.CookieCutter(new(0f, buttonsAbove ? -1.25f : 1.25f), new(1f, 0.125f));
+        Rectangle exportRun = startNewRun.CookieCutter(new(0f, 2.5f), Vector2.One);
+
         bool startNewHovered = startNewRun.Contains(mousePos);
+        bool exportHovered = false;
 
         Main.spriteBatch.DrawRectangle(startNewRun, startNewHovered ? Color.Yellow : Color.LightGray);
         Main.spriteBatch.DrawOutlinedStringInRectangle(startNewRun, JetbrainsMono, startNewHovered ? Color.Yellow : Color.White, Color.Black, UIText("NewRun"));
 
-        if (mouseClicked && startNewHovered)
+        if (RunTracker.LastCompletedRun is not null)
+        {
+            exportHovered = exportRun.Contains(mousePos);
+            Main.spriteBatch.DrawRectangle(exportRun, exportHovered ? Color.Yellow : Color.LightGray);
+            Main.spriteBatch.DrawOutlinedStringInRectangle(exportRun, JetbrainsMono, exportHovered ? Color.Yellow : Color.White, Color.Black, UIText("ExportRun"));
+        }
+
+        if (!mouseClicked)
+            return;
+
+        if (startNewHovered)
         {
             startingRun = true;
 
@@ -195,9 +209,73 @@ public class RunDisplay : ModSystem
                     continue;
 
                 startingRunType = i;
-                break;
+                return;
             }
         }
+
+        if (!exportHovered)
+            return;
+
+        if (nativefiledialog.NFD_SaveDialog("txt", null, out string filePath) != nativefiledialog.nfdresult_t.NFD_OKAY)
+            return;
+
+        if (Path.GetExtension(filePath) != ".txt")
+            filePath += ".txt";
+
+        var run = RunTracker.LastCompletedRun.Value;
+        string text = $"{run.Category.LocalizationKey.Fetch()}\n------\n";
+
+        int splitCount = run.Splits.Count;
+        int longestNameLength = 0;
+        int longestSplitLength = 0;
+        int longestRunLength = 0;
+
+        string[] splits = [.. run.Splits.Select(s => s.Split.LocalizationKey.Fetch())];
+        string[] splitTimes = [.. run.Splits.Select(s => TimeSpan.FromSeconds(s.SplitTime / 60f).Format(fractionalSeconds: true))];
+        string[] runTimes = [.. run.Splits.Select(s => TimeSpan.FromSeconds(s.RunTime / 60f).Format(fractionalSeconds: true))];
+
+        for (int i = 0; i < splitCount; i++)
+        {
+            if (splits[i].Length > longestNameLength)
+            {
+                longestNameLength = splits[i].Length;
+
+                for (int j = 0; j < i; j++)
+                    splits[j] = splits[j] + new string(' ', longestNameLength - splits[j].Length);
+            }
+
+            else if (splits[i].Length < longestNameLength)
+                splits[i] = splits[i] + new string(' ', longestNameLength - splits[i].Length);
+
+
+            if (splitTimes[i].Length > longestSplitLength)
+            {
+                longestSplitLength = splitTimes[i].Length;
+
+                for (int j = 0; j < i; j++)
+                    splitTimes[j] = new string(' ', longestSplitLength - splitTimes[i].Length) + splitTimes[j];
+            }
+
+            else if (splitTimes[i].Length < longestSplitLength)
+                splitTimes[i] = splitTimes[i] + new string(' ', longestSplitLength - splitTimes[i].Length);
+
+            if (runTimes[i].Length > longestRunLength)
+            {
+                longestRunLength = runTimes[i].Length;
+
+                for (int j = 0; j < i; j++)
+                    runTimes[j] = new string(' ', longestRunLength - runTimes[i].Length) + runTimes[j];
+            }
+
+            else if (runTimes[i].Length < longestRunLength)
+                runTimes[i] = runTimes[i] + new string(' ', longestRunLength - runTimes[i].Length);
+        }
+
+        for (int i = 0; i < splitCount; i++)
+            text += $"{splits[i]}  -  {splitTimes[i]}  -  {runTimes[i]}\n";
+
+        text += $"------\n{run.IGT.Format(fractionalSeconds: true)} IGT  --  {run.RTA.Format(fractionalSeconds: true)} RTA";
+        File.WriteAllText(filePath, text);
     }
 
     public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -242,8 +320,8 @@ public class RunDisplay : ModSystem
         spriteBatch.DrawRectangle(timerBox, Color.Black * 0.35f, fill: true);
 
         string runTitle = RunTracker.RunActive ?
-            Language.GetTextValue(SpeedrunTimer.AllCategories[RunTracker.RunCategory].LocalizationKey) :
-            RunTracker.LastCompletedRun is not null ? Language.GetTextValue(RunTracker.LastCompletedRun.Value.Category.LocalizationKey) : "---";
+            SpeedrunTimer.AllCategories[RunTracker.RunCategory].LocalizationKey.Fetch() :
+            RunTracker.LastCompletedRun is not null ? RunTracker.LastCompletedRun.Value.Category.LocalizationKey.Fetch() : "---";
 
         TimeSpan igtTime = RunTracker.RunActive ?
             TimeSpan.FromSeconds(RunTracker.IGT_FrameCounter / 60f) :
@@ -256,10 +334,10 @@ public class RunDisplay : ModSystem
         spriteBatch.DrawOutlinedStringInRectangle(titleBox, JetbrainsMono, Color.White, Color.Black, runTitle);
 
         Color igtColor = RunTracker.LastCompletedRun is null ? Color.White : Main.DiscoColor;
-        string igt = $"{(igtTime.Hours > 0 ? $"{(int)igtTime.TotalHours}:" : "")}{(igtTime.Hours > 0 ? igtTime.ToString("mm") : igtTime.ToString("%m"))}:{igtTime:ss\\.fff}";
+        string igt = igtTime.Format(fractionalSeconds: true);
         spriteBatch.DrawOutlinedStringInRectangle(igtBox, JetbrainsMono, igtColor, Color.Black, igt, alignment: Utils.TextAlignment.Right);
 
-        string rta = $"{(rtaTime.Hours > 0 ? $"{(int)rtaTime.TotalHours}:" : "")}{(rtaTime.Hours > 0 ? rtaTime.ToString("mm") : rtaTime.ToString("%m"))}:{rtaTime:ss}";
+        string rta = rtaTime.Format(fractionalSeconds: false);
         spriteBatch.DrawOutlinedStringInRectangle(rtaBox, JetbrainsMono, Color.DarkGray, Color.Black, rta, alignment: Utils.TextAlignment.Right);
 
         if (splits == 0)
@@ -282,9 +360,9 @@ public class RunDisplay : ModSystem
             Texture2D splitIcon = split.Icon.Value;
             float scale = float.Min((float)splitIcon.Width / iconArea.Width, (float)splitIcon.Height / iconArea.Height);
 
-            string splitText = Language.GetTextValue(split.LocalizationKey);
+            string splitText = split.LocalizationKey.Fetch();
             TimeSpan splitRunTime = TimeSpan.FromSeconds(runSplit.Value.RunTime / 60f);
-            string splitTime = $"{(splitRunTime.Hours > 0 ? $"{(int)splitRunTime.TotalHours}:" : "")}{(splitRunTime.Hours > 0 ? splitRunTime.ToString("mm") : splitRunTime.ToString("%m"))}:{splitRunTime:ss}";
+            string splitTime = splitRunTime.Format(fractionalSeconds: false);
 
             spriteBatch.Draw(splitIcon, iconArea.Center.ToVector2(), null, Color.White, 0f, splitIcon.Size() * 0.5f, scale, SpriteEffects.None, 0f);
             spriteBatch.DrawOutlinedStringInRectangle(textArea, JetbrainsMono, Color.White, Color.Black, splitText, alignment: Utils.TextAlignment.Left);

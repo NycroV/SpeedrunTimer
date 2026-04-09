@@ -22,7 +22,7 @@ namespace SpeedrunTimer.Config
         {
             base.OnBind();
             Options = [..SpeedrunTimer.AllCategories.Keys];
-            TextDisplayFunction = () => Label + ": " + Language.GetTextValue(SpeedrunTimer.AllCategories[GetValue()].LocalizationKey);
+            TextDisplayFunction = () => Label + ": " + SpeedrunTimer.AllCategories[GetValue()].LocalizationKey.Fetch();
         }
 
         private void SetValue(int index)

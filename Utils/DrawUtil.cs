@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace SpeedrunTimer.Utils;
@@ -327,4 +328,14 @@ public static partial class SpeedrunUtil
     {
         return rectangle.CreateMargins((int)(left * rectangle.Width), (int)(right * rectangle.Width), (int)(top * rectangle.Height), (int)(bottom * rectangle.Height));
     }
+
+    /// <summary>
+    /// Nice TimeSpan formatting.
+    /// </summary>
+    public static string Format(this TimeSpan timeSpan, bool fractionalSeconds) => $"{(timeSpan.Hours > 0 ? $"{(int)timeSpan.TotalHours}:" : "")}{(timeSpan.Hours > 0 ? timeSpan.ToString("mm") : timeSpan.ToString("%m"))}:{timeSpan.ToString($"ss{(fractionalSeconds ? "\\.fff" : "")}")}";
+
+    /// <summary>
+    /// Shorthand <see cref="Language.GetTextValue(string)"/>
+    /// </summary>
+    public static string Fetch(this string localizationKey) => Language.GetTextValue(localizationKey);
 }

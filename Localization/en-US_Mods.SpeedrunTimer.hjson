@@ -40,6 +40,7 @@ UI: {
 	Start: Start
 	Cancel: Cancel
 	NewRun: New Run
+	ExportRun: Export Run
 }
 
 Configs: {

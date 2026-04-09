@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SpeedrunTimer.DataStructures;
+namespace SpeedrunDisplay.DataStructures;
 
 public interface IBidirectionalDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     where TKey : notnull

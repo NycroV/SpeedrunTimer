@@ -1,0 +1,75 @@
+Categories: {
+	AnyPercent: Vanilla: Any%
+	AllBosses: Vanilla: AllBosses%
+}
+
+Splits: {
+	KingSlime: KS
+	EyeOfCthulhu: EoC
+	EvilBoss: Evil Boss
+	QueenBee: QB
+	Deerclops: Deer
+	Skeletron: Skeletron
+	WallOfFlesh: WoF
+	QueenSlime: QS
+	TheDestroyer: Destroyer
+	TheTwins: Twins
+	SkeletronPrime: SPrime
+	Plantera: Plant
+	Golem: Golem
+	DukeFishron: DF
+	EmpressOfLight: EoL
+	LunaticCultist: Cultist
+	SolarPillar: Solar
+	NebulaPillar: Nebula
+	VortexPillar: Vortex
+	StardustPillar: Stardust
+	MoonLord: ML
+	AllBosses: All Bosses
+}
+
+UI: {
+	CancelRun: Cancel Run
+	ConfirmCancelRun:
+		'''
+		Are you sure you want to
+		cancel the current run?
+		'''
+	Yes: YES
+	No: NO
+	Start: Start
+	Cancel: Cancel
+	NewRun: New Run
+	ExportRun: Export Run
+}
+
+Configs: {
+	SpeedrunConfig: {
+		Headers: {
+		}
+
+		SplitsToShow: {
+		}
+
+		DefaultRunCategory: {
+		}
+
+		AutoRestart: {
+		}
+
+		ShowOnTop: {
+		}
+
+		LockSpeedrunUIPos: {
+		}
+
+		SpeedrunUIScale: {
+		}
+
+		SpeedrunUIPosX: {
+		}
+
+		SpeedrunUIPosY: {
+		}
+	}
+}

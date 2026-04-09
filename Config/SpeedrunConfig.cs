@@ -4,7 +4,7 @@ using System.ComponentModel;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
-namespace SpeedrunTimer.Config;
+namespace SpeedrunDisplay.Config;
 
 public class SpeedrunConfig : ModConfig
 {
@@ -54,6 +54,6 @@ public class SpeedrunConfig : ModConfig
     [DefaultValue(0.9f)]
     public float SpeedrunUIPosX { get; set; }
 
-    [DefaultValue(0.3f)]
+    [DefaultValue(0.1f)]
     public float SpeedrunUIPosY { get; set; }
 }

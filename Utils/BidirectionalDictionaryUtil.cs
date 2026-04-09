@@ -1,9 +1,9 @@
-﻿using SpeedrunTimer.DataStructures;
+﻿using SpeedrunDisplay.DataStructures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpeedrunTimer.Utils;
+namespace SpeedrunDisplay.Utils;
 #nullable enable
 
 public static partial class SpeedrunUtil

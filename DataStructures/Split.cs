@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using SpeedrunTimer.Systems;
+using SpeedrunDisplay.Systems;
 using System;
 
-namespace SpeedrunTimer.DataStructures;
+namespace SpeedrunDisplay.DataStructures;
 
 public record class Split(string LocalizationKey, Asset<Texture2D> Icon, Func<bool> CompletionCheck)
 {

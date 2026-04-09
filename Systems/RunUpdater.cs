@@ -1,7 +1,7 @@
 ﻿using System;
 using Terraria.ModLoader;
 
-namespace SpeedrunTimer.Systems;
+namespace SpeedrunDisplay.Systems;
 
 public class RunUpdater : ModSystem
 {
@@ -17,7 +17,7 @@ public class RunUpdater : ModSystem
             RunTracker.RTA_RunStart = DateTime.UtcNow;
 
         // Retrieve the current run category and the run end criteria.
-        var runCategory = SpeedrunTimer.AllCategories[RunTracker.RunCategory!];
+        var runCategory = SpeedrunDisplay.AllCategories[RunTracker.RunCategory!];
         var completionSplit = runCategory.CompletionSplit;
 
         // Complete the run if the run end criteria has been met.

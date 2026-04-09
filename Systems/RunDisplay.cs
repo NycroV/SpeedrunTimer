@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoMod.Cil;
 using ReLogic.Content;
-using SpeedrunTimer.Config;
-using SpeedrunTimer.DataStructures;
-using SpeedrunTimer.Utils;
+using SpeedrunDisplay.Config;
+using SpeedrunDisplay.DataStructures;
+using SpeedrunDisplay.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,14 +16,14 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace SpeedrunTimer.Systems;
+namespace SpeedrunDisplay.Systems;
 
 public class RunDisplay : ModSystem
 {
     public static bool DisplayTimer { get; set; } = true;
 
-    public static SpriteFont JetbrainsMono { get; set; } = ModContent.Request<SpriteFont>("SpeedrunTimer/Assets/Fonts/JetbrainsMono", AssetRequestMode.ImmediateLoad).Value;
-    public static Texture2D Arrow { get; set; } = ModContent.Request<Texture2D>("SpeedrunTimer/Assets/Textures/Arrow", AssetRequestMode.ImmediateLoad).Value;
+    public static SpriteFont JetbrainsMono { get; set; } = ModContent.Request<SpriteFont>("SpeedrunDisplay/Assets/Fonts/JetbrainsMono", AssetRequestMode.ImmediateLoad).Value;
+    public static Texture2D Arrow { get; set; } = ModContent.Request<Texture2D>("SpeedrunDisplay/Assets/Textures/Arrow", AssetRequestMode.ImmediateLoad).Value;
 
     private static bool movingTimer = false;
     private static Point cachedMousePos = Point.Zero;
@@ -33,7 +33,7 @@ public class RunDisplay : ModSystem
     private static bool startingRun = false;
     private static int startingRunType = -1;
 
-    private static string UIText(string localization) => Language.GetTextValue("Mods.SpeedrunTimer.UI." + localization);
+    private static string UIText(string localization) => Language.GetTextValue("Mods.SpeedrunDisplay.UI." + localization);
 
     public override void OnModLoad() => IL_Main.DrawMenu += IL_Main_DrawMenu;
 
@@ -53,7 +53,7 @@ public class RunDisplay : ModSystem
         }
         catch
         {
-            MonoModHooks.DumpIL(ModContent.GetInstance<SpeedrunTimer>(), il);
+            MonoModHooks.DumpIL(ModContent.GetInstance<SpeedrunDisplay>(), il);
         }
     }
 
@@ -135,8 +135,8 @@ public class RunDisplay : ModSystem
             bool previousHovered = previousType.Contains(mousePos);
             bool nextHovered = nextType.Contains(mousePos);
 
-            string runCategory = SpeedrunTimer.AllCategories.ElementAt(startingRunType).Key;
-            Main.spriteBatch.DrawOutlinedStringInRectangle(runType, JetbrainsMono, Color.White, Color.Black, SpeedrunTimer.AllCategories[runCategory].LocalizationKey.Fetch());
+            string runCategory = SpeedrunDisplay.AllCategories.ElementAt(startingRunType).Key;
+            Main.spriteBatch.DrawOutlinedStringInRectangle(runType, JetbrainsMono, Color.White, Color.Black, SpeedrunDisplay.AllCategories[runCategory].LocalizationKey.Fetch());
 
             Main.spriteBatch.DrawRectangle(startSelectedRun, startSelectedHovered ? Color.Yellow : Color.LightGray);
             Main.spriteBatch.DrawOutlinedStringInRectangle(startSelectedRun, JetbrainsMono, startSelectedHovered ? Color.Yellow : Color.White, Color.Black, UIText("Start"));
@@ -160,7 +160,7 @@ public class RunDisplay : ModSystem
             else if (previousHovered)
             {
                 startingRunType++;
-                if (startingRunType >= SpeedrunTimer.AllCategories.Count)
+                if (startingRunType >= SpeedrunDisplay.AllCategories.Count)
                     startingRunType = 0;
             }
 
@@ -168,7 +168,7 @@ public class RunDisplay : ModSystem
             {
                 startingRunType--;
                 if (startingRunType < 0)
-                    startingRunType = SpeedrunTimer.AllCategories.Count - 1;
+                    startingRunType = SpeedrunDisplay.AllCategories.Count - 1;
             }
 
             else if (cancelStartHovered)
@@ -203,9 +203,9 @@ public class RunDisplay : ModSystem
             if (startingRunType >= 0)
                 return;
 
-            for (int i = 0; i < SpeedrunTimer.AllCategories.Count; i++)
+            for (int i = 0; i < SpeedrunDisplay.AllCategories.Count; i++)
             {
-                if (SpeedrunConfig.Instance.DefaultRunCategory != SpeedrunTimer.AllCategories.ElementAt(i).Key)
+                if (SpeedrunConfig.Instance.DefaultRunCategory != SpeedrunDisplay.AllCategories.ElementAt(i).Key)
                     continue;
 
                 startingRunType = i;
@@ -289,7 +289,7 @@ public class RunDisplay : ModSystem
             return;
 
         layers.Insert(layerIndex, new LegacyGameInterfaceLayer(
-            "SpeedrunTimer: Timer Display", () => {
+            "SpeedrunDisplay: Timer Display", () => {
                 DrawSpeedrunTimer(Main.spriteBatch, Main.ScreenSize.ToVector2(), new Point(Main.mouseX, Main.mouseY));
                 return true;
             }, InterfaceScaleType.None));
@@ -320,7 +320,7 @@ public class RunDisplay : ModSystem
         spriteBatch.DrawRectangle(timerBox, Color.Black * 0.35f, fill: true);
 
         string runTitle = RunTracker.RunActive ?
-            SpeedrunTimer.AllCategories[RunTracker.RunCategory].LocalizationKey.Fetch() :
+            SpeedrunDisplay.AllCategories[RunTracker.RunCategory].LocalizationKey.Fetch() :
             RunTracker.LastCompletedRun is not null ? RunTracker.LastCompletedRun.Value.Category.LocalizationKey.Fetch() : "---";
 
         TimeSpan igtTime = RunTracker.RunActive ?

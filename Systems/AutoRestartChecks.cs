@@ -1,9 +1,9 @@
-﻿using SpeedrunTimer.Config;
+﻿using SpeedrunDisplay.Config;
 using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace SpeedrunTimer.Systems;
+namespace SpeedrunDisplay.Systems;
 
 public class AutoRestartCheck : ModPlayer
 {
@@ -11,7 +11,7 @@ public class AutoRestartCheck : ModPlayer
 
     public static string LastLoadedWorldPath { get; private set; } = null;
 
-    internal static readonly string AutoRestartInfoPath = Path.Combine(Main.SavePath, "SpeedrunTimer", "AutoRestartInfo.txt");
+    internal static readonly string AutoRestartInfoPath = Path.Combine(Main.SavePath, "SpeedrunDisplay", "AutoRestartInfo.txt");
 
     public override void Load()
     {

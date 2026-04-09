@@ -1,5 +1,5 @@
-﻿using SpeedrunTimer.Config;
-using SpeedrunTimer.DataStructures;
+﻿using SpeedrunDisplay.Config;
+using SpeedrunDisplay.DataStructures;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
-namespace SpeedrunTimer.Systems;
+namespace SpeedrunDisplay.Systems;
 
 public class RunTracker : ModSystem
 {
@@ -64,7 +64,7 @@ public class RunTracker : ModSystem
     /// </summary>
     public static CompletedRun? LastCompletedRun { get; private set; } = null;
 
-    internal static readonly string ActiveRunFilePath = Path.Combine(Main.SavePath, "SpeedrunTimer", "ActiveRun.txt");
+    internal static readonly string ActiveRunFilePath = Path.Combine(Main.SavePath, "SpeedrunDisplay", "ActiveRun.txt");
 
     // Re-loads the last active run, if there was one.
     public override void PostSetupContent()
@@ -93,7 +93,7 @@ public class RunTracker : ModSystem
 
         CurrentSplits.Clear();
         AvailableSplits.Clear();
-        AvailableSplits.AddRange(SpeedrunTimer.AllSplits.Values);
+        AvailableSplits.AddRange(SpeedrunDisplay.AllSplits.Values);
     }
 
     internal static void CancelRun()
@@ -109,7 +109,7 @@ public class RunTracker : ModSystem
 
     internal static void CompleteRun()
     {
-        var category = SpeedrunTimer.AllCategories[RunCategory!];
+        var category = SpeedrunDisplay.AllCategories[RunCategory!];
         var splits = CurrentSplits.ToArray().AsReadOnly();
         TimeSpan rta = DateTime.UtcNow - RTA_RunStart;
         TimeSpan igt = TimeSpan.FromSeconds(IGT_FrameCounter / 60f);
@@ -146,7 +146,7 @@ public class RunTracker : ModSystem
         {
             var splitParts = runSplit.Split('|');
 
-            if (splitParts.Length != 3 || !SpeedrunTimer.AllSplits.TryGetValue(splitParts[0], out var split))
+            if (splitParts.Length != 3 || !SpeedrunDisplay.AllSplits.TryGetValue(splitParts[0], out var split))
                 return;
 
             if (!uint.TryParse(splitParts[1], out var runTime))
@@ -162,7 +162,7 @@ public class RunTracker : ModSystem
         RTA_RunStart = runStart;
         IGT_FrameCounter = frameCounter;
 
-        AvailableSplits.AddRange(SpeedrunTimer.AllSplits.Values);
+        AvailableSplits.AddRange(SpeedrunDisplay.AllSplits.Values);
 
         foreach (var runSplit in runSplits)
             runSplit.Register();
@@ -179,7 +179,7 @@ public class RunTracker : ModSystem
         }
 
         var stringSplits = CurrentSplits.Select(s => string.Join('|',
-            SpeedrunTimer.AllSplits.Inverse[s.Split],
+            SpeedrunDisplay.AllSplits.Inverse[s.Split],
             s.RunTime.ToString(),
             s.SplitTime.ToString()));
 
@@ -203,12 +203,12 @@ public class RunTracker : ModSystem
         // ConfigManager.FinishSetup()
         orig();
 
-        if (RunCategory is not null && !SpeedrunTimer.AllCategories.ContainsKey(RunCategory))
+        if (RunCategory is not null && !SpeedrunDisplay.AllCategories.ContainsKey(RunCategory))
             RunCategory = null;
 
-        if (!SpeedrunTimer.AllCategories.ContainsKey(SpeedrunConfig.Instance.DefaultRunCategory))
+        if (!SpeedrunDisplay.AllCategories.ContainsKey(SpeedrunConfig.Instance.DefaultRunCategory))
         {
-            SpeedrunConfig.Instance.DefaultRunCategory = SpeedrunTimer.AllCategories.First().Key;
+            SpeedrunConfig.Instance.DefaultRunCategory = SpeedrunDisplay.AllCategories.First().Key;
             SpeedrunConfig.Instance.SaveChanges();
         }
 

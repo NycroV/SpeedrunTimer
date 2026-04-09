@@ -1,8 +1,8 @@
-﻿using SpeedrunTimer.Systems;
+﻿using SpeedrunDisplay.Systems;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 
-namespace SpeedrunTimer.Config;
+namespace SpeedrunDisplay.Config;
 
 public class SpeedrunKeybinds : ModSystem
 {

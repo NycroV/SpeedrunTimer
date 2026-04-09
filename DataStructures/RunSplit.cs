@@ -1,6 +1,6 @@
-﻿using SpeedrunTimer.Systems;
+﻿using SpeedrunDisplay.Systems;
 
-namespace SpeedrunTimer.DataStructures;
+namespace SpeedrunDisplay.DataStructures;
 
 public readonly record struct RunSplit(Split Split, uint RunTime, uint SplitTime)
 {

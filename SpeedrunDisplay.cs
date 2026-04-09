@@ -1,17 +1,17 @@
-global using static SpeedrunTimer.Utils.SpeedrunUtil;
+global using static SpeedrunDisplay.Utils.SpeedrunUtil;
 
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Utils;
 using ReLogic.Content;
-using SpeedrunTimer.DataStructures;
+using SpeedrunDisplay.DataStructures;
 using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace SpeedrunTimer;
+namespace SpeedrunDisplay;
 
-public class SpeedrunTimer : Mod
+public class SpeedrunDisplay : Mod
 {
     /// <summary>
     /// The collection of all registered splits from all mods.
@@ -26,7 +26,7 @@ public class SpeedrunTimer : Mod
     public override void Load()
     {
         static Asset<Texture2D> BossHead(int bossId) => ModContent.Request<Texture2D>($"Terraria/Images/NPC_Head_Boss_{bossId}");
-        static Asset<Texture2D> SpeedrunAsset(string name) => ModContent.Request<Texture2D>($"SpeedrunTimer/Assets/Textures/{name}");
+        static Asset<Texture2D> SpeedrunAsset(string name) => ModContent.Request<Texture2D>($"SpeedrunDisplay/Assets/Textures/{name}");
 
         AllSplits.AddRange(new Dictionary<string, Split>()
         {

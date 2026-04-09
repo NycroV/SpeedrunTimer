@@ -8,7 +8,7 @@ using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace SpeedrunTimer.Utils;
+namespace SpeedrunDisplay.Utils;
 
 public enum TextAlignment
 {

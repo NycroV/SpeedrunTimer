@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SpeedrunTimer.DataStructures;
+namespace SpeedrunDisplay.DataStructures;
 #nullable enable
 
 /// <summary>

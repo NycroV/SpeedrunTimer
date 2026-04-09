@@ -3,7 +3,7 @@ using Terraria.Localization;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
 
-namespace SpeedrunTimer.Config
+namespace SpeedrunDisplay.Config
 {
     public class RunCategoryStringSelectionElement : RangeElement
     {
@@ -21,8 +21,8 @@ namespace SpeedrunTimer.Config
         public override void OnBind()
         {
             base.OnBind();
-            Options = [..SpeedrunTimer.AllCategories.Keys];
-            TextDisplayFunction = () => Label + ": " + SpeedrunTimer.AllCategories[GetValue()].LocalizationKey.Fetch();
+            Options = [..SpeedrunDisplay.AllCategories.Keys];
+            TextDisplayFunction = () => Label + ": " + SpeedrunDisplay.AllCategories[GetValue()].LocalizationKey.Fetch();
         }
 
         private void SetValue(int index)

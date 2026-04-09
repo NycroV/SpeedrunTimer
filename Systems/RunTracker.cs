@@ -193,8 +193,14 @@ public class RunTracker : ModSystem
         File.WriteAllText(ActiveRunFilePath, activeRun);
     }
 
+    // This ensures that the "default run category" config and the saved
+    // category from the last active run are valid. If the user unloads
+    // the mod which added their specific category, or changes the saved category
+    // from their last active run, it can cause the game to crash by trying
+    // to access a category that does not exist.
     internal static void ValidateCategoryTypes(Action orig)
     {
+        // ConfigManager.FinishSetup()
         orig();
 
         if (RunCategory is not null && !SpeedrunTimer.AllCategories.ContainsKey(RunCategory))

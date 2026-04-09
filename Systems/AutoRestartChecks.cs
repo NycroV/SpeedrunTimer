@@ -32,13 +32,16 @@ public class AutoRestartCheck : ModPlayer
 
     public override void OnEnterWorld()
     {
+        // We read file paths instead of names or other arbitrary data from something like TagCompounds
         string playerPath = Main.ActivePlayerFileData.Path;
         string worldPath = Main.ActiveWorldFileData.Path;
 
+        // This should only happen on first world entry
         LastLoadedPlayerPath ??= playerPath;
         LastLoadedWorldPath ??= worldPath;
 
-        if (LastLoadedPlayerPath != playerPath && LastLoadedWorldPath != worldPath && SpeedrunConfig.Instance.AutoRestart)
+        // Reset timer on a new player AND new world
+        if (SpeedrunConfig.Instance.AutoRestart && LastLoadedPlayerPath != playerPath && LastLoadedWorldPath != worldPath)
         {
             RunTracker.CancelRun();
             RunTracker.StartRun(SpeedrunConfig.Instance.DefaultRunCategory);

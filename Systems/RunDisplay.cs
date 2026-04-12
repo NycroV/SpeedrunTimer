@@ -319,20 +319,20 @@ public class RunDisplay : ModSystem
         scrolledSplitOffset = int.Clamp(scrolledSplitOffset, 0, int.Max(0, maxSplits - splits));
 
         IEnumerable<RunSplit> splitList = RunTracker.LastCompletedRun?.Splits.AsEnumerable() ?? RunTracker.CurrentSplits;
-        RunSplit[] runSplits = splitCount > 0 ? [..splitList.TakeLast(splitCount + scrolledSplitOffset).Take(splitCount)] : [];
-
+        IEnumerator<RunSplit> runSplits = (splitCount > 0 ? splitList.TakeLast(splitCount + scrolledSplitOffset).Take(splitCount) : []).GetEnumerator();
+        
         Rectangle splitBox = titleBox.CookieCutter(new(0f, 2.6f), Vector2.One);
-        RunSplit? split = splitCount > 0 ? runSplits[0] : null;
+        RunSplit? split = runSplits.MoveNext() ? runSplits.Current : null;
         DrawSplit(splitBox, split);
 
         for (int i = 1; i < splits; i++)
         {
             splitBox = splitBox.CookieCutter(new(0f, 2.5f), Vector2.One);
-
+            
             if (i % 2 == 1)
                 spriteBatch.DrawRectangle(splitBox.CookieCutter(Vector2.Zero, new(1.05f, 1.02f)), Color.Black * 0.2f, fill: true);
 
-            split = splitCount > i ? runSplits[i] : null;
+            split = runSplits.MoveNext() ? runSplits.Current : null;
             DrawSplit(splitBox, split);
         }
 

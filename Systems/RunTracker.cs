@@ -73,12 +73,11 @@ public class RunTracker : ModSystem
         SpeedrunConfig.Instance.GetType(); // Force a config cache by fetching the property, we don't actually need it
     }
 
-    // Verifies that the last active run type is available, and that the configured default run type is valid
-
     public override void Load()
     {
         MonoModHooks.Add(typeof(ConfigManager).GetMethod("FinishSetup", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static, Type.EmptyTypes), ValidateCategoryTypes);
         Main.instance.Exiting += (_, _) => TrySaveActiveRun();
+        AppDomain.CurrentDomain.UnhandledException += (_, _) => TrySaveActiveRun();
     }
 
     // Saves the currently active run, if there is one.
@@ -237,7 +236,7 @@ public class RunTracker : ModSystem
         if (!RunActive)
         {
             if (File.Exists(ActiveRunFilePath))
-                File.Delete(ActiveRunFilePath);
+                try { File.Delete(ActiveRunFilePath); } catch { }
 
             return;
         }
@@ -251,10 +250,14 @@ public class RunTracker : ModSystem
         string activeRun = string.Join('\n', RunCategory, RTA_RunStart.ToString(), IGT_FrameCounter.ToString(), splitsLine);
         string directory = Path.GetDirectoryName(ActiveRunFilePath)!;
 
-        if (!Directory.Exists(directory))
-            Directory.CreateDirectory(directory);
+        try
+        {
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
 
-        File.WriteAllText(ActiveRunFilePath, activeRun);
+            File.WriteAllText(ActiveRunFilePath, activeRun);
+        }
+        catch { }
     }
 
     // This ensures that the "default run category" config and the saved

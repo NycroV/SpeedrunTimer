@@ -131,12 +131,8 @@ public class SpeedrunDisplay : Mod
             // Info
             "runactive" => RunTracker.RunActive,
             "runcategory" => RunTracker.RunCategory,
-            "currentsplits" => RunTracker.CurrentSplits.Select(s => (AllSplits.Inverse[s.Split], s.SplitTime, s.RunTime)).ToArray(),
-            "lastcompletedrun" => RunTracker.LastCompletedRun is null ? null :
-                (AllCategories.Inverse[RunTracker.LastCompletedRun.Value.Category],
-                RunTracker.LastCompletedRun.Value.Splits.Select(s => (AllSplits.Inverse[s.Split], s.SplitTime, s.RunTime)).ToArray(),
-                RunTracker.LastCompletedRun.Value.IGT,
-                RunTracker.LastCompletedRun.Value.RTA),
+            "currentsplits" => RunTracker.CurrentSplits.Select(s => (CastRunSplit)s).ToArray(), // using .Cast<T>() is being weird here for some reason
+            "lastcompletedrun" => RunTracker.LastCompletedRun is null ? null : (CastCompletedRun)RunTracker.LastCompletedRun.Value,
 
             _ => throw new NotImplementedException($"Did not recognize {args[0]} as a valid mod call!")
         };

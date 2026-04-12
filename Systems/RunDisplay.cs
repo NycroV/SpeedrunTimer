@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -32,6 +33,8 @@ public class RunDisplay : ModSystem
     private static bool cancellingRun = false;
     private static bool startingRun = false;
     private static int startingRunType = -1;
+
+    private static int scrolledSplitOffset = 0;
 
     private static string UIText(string localization) => Language.GetTextValue("Mods.SpeedrunDisplay.UI." + localization);
 
@@ -308,8 +311,15 @@ public class RunDisplay : ModSystem
             spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.White, Color.Black, splitTime, alignment: Utils.TextAlignment.Right);
         }
 
-        int splitCount = Math.Min(splits, RunTracker.LastCompletedRun?.Splits.Count ?? RunTracker.CurrentSplits?.Count ?? 0);
-        RunSplit[] runSplits = splitCount > 0 ? [..RunTracker.LastCompletedRun?.Splits.TakeLast(splitCount) ?? RunTracker.CurrentSplits.TakeLast(splitCount)] : [];
+        if (drawArea.Contains(mousePos) && PlayerInput.ScrollWheelDeltaForUI != 0)
+            scrolledSplitOffset += int.Sign(PlayerInput.ScrollWheelDeltaForUI);
+
+        int maxSplits = RunTracker.LastCompletedRun?.Splits.Count ?? RunTracker.CurrentSplits?.Count ?? 0;
+        int splitCount = Math.Min(splits, maxSplits);
+        scrolledSplitOffset = int.Clamp(scrolledSplitOffset, 0, int.Max(0, maxSplits - splits));
+
+        IEnumerable<RunSplit> splitList = RunTracker.LastCompletedRun?.Splits.AsEnumerable() ?? RunTracker.CurrentSplits;
+        RunSplit[] runSplits = splitCount > 0 ? [..splitList.TakeLast(splitCount + scrolledSplitOffset).Take(splitCount)] : [];
 
         Rectangle splitBox = titleBox.CookieCutter(new(0f, 2.6f), Vector2.One);
         RunSplit? split = splitCount > 0 ? runSplits[0] : null;

@@ -121,9 +121,9 @@ public class SpeedrunDisplay : Mod
             ["FrostMoon"] = new(GetKey("Splits.FrostMoon"), VanillaAsset("Extra_8"), () => Extended() && DownedSystem.downedFrostMoon),
             ["MartianMadness"] = new(GetKey("Splits.MartianMadness"), VanillaAsset("Extra_10"), () => Extended() && NPC.downedMartians),
 
-            ["OldOnesArmyT1"] = new(GetKey("Splits.OOAT1"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionT1),
-            ["OldOnesArmyT2"] = new(GetKey("Splits.OOAT2"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionT2),
-            ["OldOnesArmyT3"] = new(GetKey("Splits.OOAT3"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionT3),
+            ["OldOnesArmyT1"] = new(GetKey("Splits.OldOnesArmyT1"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionT1),
+            ["OldOnesArmyT2"] = new(GetKey("Splits.OldOnesArmyT2"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionT2),
+            ["OldOnesArmyT3"] = new(GetKey("Splits.OldOnesArmyT3"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionT3),
 
             ["CraftZenith"] = new(GetKey("Splits.CraftZenith"), ItemSprite(ItemID.Zenith), () => Extended() && RunTracker.RunCategory == "CraftZenith" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.Zenith)),
             ["CraftTerraBlade"] = new(GetKey("Splits.CraftTerraBlade"), ItemSprite(ItemID.TerraBlade), () => Extended() && RunTracker.RunCategory == "CraftTerraBlade" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.TerraBlade)),
@@ -158,7 +158,7 @@ public class SpeedrunDisplay : Mod
                 DD2Event.DownedInvasionAnyDifficulty),
 
             ["TorchGod"] = new(GetKey("Splits.TorchGod"), ItemSprite(ItemID.TorchGodsFavor), () => Extended() && Main.LocalPlayer.unlockedBiomeTorches),
-            ["OldOnesArmy"] = new(GetKey("Splits.OldOnesArmy"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionAnyDifficulty),
+            ["OldOnesArmy"] = new(GetKey("Splits.OldOnesArmy"), SpeedrunAsset("OldOnesArmy"), () => Extended() && RunTracker.RunCategory == "OldOnesArmy" && DD2Event.DownedInvasionAnyDifficulty),
             ["AllAchievements"] = new(GetKey("Splits.AllAchievements"), SpeedrunAsset("AllBossesIcon"), () => Extended() && false), // TODO
 
             ["PlatinumCoin"] = new(GetKey("Splits.PlatinumCoin"), ItemSprite(ItemID.PlatinumCoin), () => Extended() && RunTracker.RunCategory == "PlatinumCoin" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.PlatinumCoin)),

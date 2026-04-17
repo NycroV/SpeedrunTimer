@@ -311,13 +311,19 @@ public class RunDisplay : ModSystem
             spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.White, Color.Black, splitTime, alignment: Utils.TextAlignment.Right);
         }
 
-        if (drawArea.Contains(mousePos) && PlayerInput.ScrollWheelDeltaForUI != 0)
-            scrolledSplitOffset += int.Sign(PlayerInput.ScrollWheelDeltaForUI);
-
         int maxSplits = RunTracker.LastCompletedRun?.Splits.Count ?? RunTracker.CurrentSplits?.Count ?? 0;
         int splitCount = Math.Min(splits, maxSplits);
-        scrolledSplitOffset = int.Clamp(scrolledSplitOffset, 0, int.Max(0, maxSplits - splits));
 
+        if (drawArea.Contains(mousePos))
+        {
+            if (splitCount < maxSplits)
+                PlayerInput.LockVanillaMouseScroll("SpeedrunDisplay/SpeedrunTimer");
+
+            if (PlayerInput.ScrollWheelDeltaForUI != 0)
+                scrolledSplitOffset += int.Sign(PlayerInput.ScrollWheelDeltaForUI);
+        }
+
+        scrolledSplitOffset = int.Clamp(scrolledSplitOffset, 0, int.Max(0, maxSplits - splits));
         IEnumerable<RunSplit> splitList = RunTracker.LastCompletedRun?.Splits.AsEnumerable() ?? RunTracker.CurrentSplits;
         IEnumerator<RunSplit> runSplits = (splitCount > 0 ? splitList.TakeLast(splitCount + scrolledSplitOffset).Take(splitCount) : []).GetEnumerator();
         

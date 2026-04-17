@@ -61,15 +61,18 @@ public class SpeedrunConfig : ModConfig
 
     [Header("SplitsCategoriesConfig")]
     [DefaultValue(false)]
-    public bool ExtendedVariants { get; set; }
-
-    [DefaultValue(false)]
     public bool BundlePillars { get; set; }
 
     [DefaultValue(true)]
     public bool BundleEvils { get; set; }
 
-    public override bool NeedsReload(ModConfig pendingConfig) => RunTracker.RunActive;
+    [DefaultValue(false)]
+    public bool ExtendedVariants { get; set; }
+
+    public override bool NeedsReload(ModConfig pendingConfig) =>
+        pendingConfig is SpeedrunConfig config &&
+        config.ExtendedVariants != ExtendedVariants &&
+        RunTracker.RunActive;
 
     public override void OnChanged()
     {

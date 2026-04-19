@@ -114,9 +114,19 @@ Configs: {
 			Tooltip: Prevents moving the speedrun timer UI with the mouse
 		}
 
+		DisplayRunTitle: {
+			Label: Display Run Title
+			Tooltip: Whether or not to show the run category at the top of the timer
+		}
+
 		SpeedrunUIScale: {
 			Label: Speedrun UI Scale
 			Tooltip: The scale at which to draw the speedrun timer UI
+		}
+
+		SpeedrunUIColor: {
+			Label: Speedrun UI Color
+			Tooltip: The color of the speedrun UI panel
 		}
 
 		SpeedrunUIPosX: {
@@ -146,4 +156,7 @@ Configs: {
 	}
 }
 
-Keybinds.ToggleSpeedrunUI.DisplayName: Toggle Speedrun UI
+Keybinds: {
+	ToggleSpeedrunUI.DisplayName: Toggle Speedrun UI
+	ToggleSplitDisplay.DisplayName: Toggle Split Display
+}

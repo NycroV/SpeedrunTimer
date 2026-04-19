@@ -35,7 +35,7 @@ public class SpeedrunConfig : ModConfig
     [DefaultValue(6)]
     public int SplitsToShow { get; set; }
 
-    [DefaultValue("Any%")]
+    [DefaultValue("MoonLord")]
     [CustomModConfigItem(typeof(RunCategoryStringSelectionElement))]
     public string DefaultRunCategory { get; set; }
 
@@ -49,9 +49,15 @@ public class SpeedrunConfig : ModConfig
     [DefaultValue(true)]
     public bool LockSpeedrunUIPos { get; set; }
 
+    [DefaultValue(true)]
+    public bool DisplayRunTitle { get; set; }
+
     [DefaultValue(1f)]
     [Range(0.1f, 3f)]
     public float SpeedrunUIScale { get; set; }
+
+    [DefaultValue(typeof(Color), "0, 0, 0, 255")]
+    public Color SpeedrunUIColor { get; set; }
 
     [DefaultValue(0.9f)]
     public float SpeedrunUIPosX { get; set; }

@@ -8,7 +8,6 @@ using SpeedrunDisplay.DataStructures;
 using SpeedrunDisplay.Utils;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Terraria;
@@ -22,6 +21,25 @@ namespace SpeedrunDisplay.Systems;
 public class RunDisplay : ModSystem
 {
     public static bool DisplayTimer { get; set; } = true;
+
+    public enum SplitDisplayMode : byte
+    {
+        None,
+        One,
+        All
+    }
+
+    private static SplitDisplayMode? _splitDisplay = null;
+    public static SplitDisplayMode SplitDisplay
+    {
+        get
+        {
+            _splitDisplay ??= (SpeedrunKeybinds.ToggleSplitDisplay.GetAssignedKeys().Count == 0) ? SplitDisplayMode.All : SplitDisplayMode.One;
+            return _splitDisplay.Value;
+        }
+
+        set => _splitDisplay = value;
+    }
 
     public static SpriteFont JetbrainsMono { get; set; } = ModContent.Request<SpriteFont>("SpeedrunDisplay/Assets/Fonts/JetbrainsMono", AssetRequestMode.ImmediateLoad).Value;
     public static Texture2D Arrow { get; set; } = ModContent.Request<Texture2D>("SpeedrunDisplay/Assets/Textures/Arrow", AssetRequestMode.ImmediateLoad).Value;
@@ -62,29 +80,40 @@ public class RunDisplay : ModSystem
 
     private static void DrawMenuRunButtons()
     {
-        if (!RunTracker.CategoriesValidated)
+        if (!RunTracker.CategoriesValidated || !SpeedrunKeybinds.Loaded)
             return;
 
         Main.spriteBatch.End();
         Main.spriteBatch.Begin();
 
+        SpeedrunUtil.RunningFromMenu = true;
         var mouseState = Mouse.GetState();
         Vector2 screenSize = new(Main.graphics.PreferredBackBufferWidth, Main.graphics.PreferredBackBufferHeight);
         Point mousePos = new(mouseState.X, mouseState.Y);
 
         bool mouseClicked = cachedClick && mouseState.LeftButton == ButtonState.Released && Main.hasFocus;
         cachedClick = mouseState.LeftButton == ButtonState.Pressed;
+        Rectangle? timerArea = DrawSpeedrunTimer(Main.spriteBatch, screenSize, mousePos);
+        SpeedrunUtil.RunningFromMenu = false;
 
-        Rectangle timerUI = DrawSpeedrunTimer(Main.spriteBatch, screenSize, mousePos);
+        if (!timerArea.HasValue)
+            return;
+
+        Rectangle timerUI = timerArea.Value;
         bool buttonsAbove = timerUI.Center().Y > screenSize.Y * 0.5f;
+
+        Vector2 subBoxSize = new(timerUI.Width, timerUI.Width * 0.2f);
+        Vector2 referencePoint = buttonsAbove ? timerUI.Top() : timerUI.Bottom();
+        int sign = -buttonsAbove.ToDirectionInt();
 
         if (cancellingRun)
         {
-            Rectangle warning = timerUI.CookieCutter(new(0f, buttonsAbove ? -1.65f : 1.25f), new(1.2f, 0.2f));
+            Vector2 warningSize = new(timerUI.Width * 1.25f, timerUI.Width * 0.325f);
+            Rectangle warning = CenteredRectangle(referencePoint + (warningSize * Vector2.UnitY * (buttonsAbove ? -1.6f : 0.6f)), warningSize);
             Main.spriteBatch.DrawOutlinedStringInRectangle(warning, JetbrainsMono, Color.White, Color.Black, UIText("ConfirmCancelRun"));
 
-            Rectangle confirmCancel = timerUI.CookieCutter(new(-0.55f, buttonsAbove ? -1.25f : 1.65f), new(0.35f, 0.12f));
-            Rectangle cancelCancel = timerUI.CookieCutter(new(0.55f, buttonsAbove ? -1.25f : 1.65f), new(0.35f, 0.12f));
+            Rectangle confirmCancel = warning.CookieCutter(new(-0.5f, 2f), new(0.3f, 0.6f));
+            Rectangle cancelCancel = warning.CookieCutter(new(0.5f, 2f), new(0.3f, 0.6f));
 
             bool confirmHovered = confirmCancel.Contains(mousePos);
             bool cancelHovered = cancelCancel.Contains(mousePos);
@@ -112,7 +141,7 @@ public class RunDisplay : ModSystem
 
         if (RunTracker.RunActive)
         {
-            Rectangle cancelRun = timerUI.CookieCutter(new(0f, buttonsAbove ? -1.25f : 1.25f), new(1f, 0.125f));
+            Rectangle cancelRun = CenteredRectangle(referencePoint + (subBoxSize * Vector2.UnitY * sign), subBoxSize);
             bool cancelHovered = cancelRun.Contains(mousePos);
 
             Main.spriteBatch.DrawRectangle(cancelRun, cancelHovered ? Color.Yellow : Color.LightGray);
@@ -126,7 +155,7 @@ public class RunDisplay : ModSystem
 
         if (startingRun)
         {
-            Rectangle runType = timerUI.CookieCutter(new(0f, buttonsAbove ? -1.8f : 1.2f), new(1f, 0.125f));
+            Rectangle runType = CenteredRectangle(referencePoint + (subBoxSize * Vector2.UnitY * (buttonsAbove ? -3.4f : 0.7f)), subBoxSize);
             Rectangle startSelectedRun = runType.CookieCutter(new(0f, 2.5f), new(0.6f, 1f));
             Rectangle cancelStartRun = startSelectedRun.CookieCutter(new(0f, 2.6f), new(1f, 0.8f));
 
@@ -180,7 +209,7 @@ public class RunDisplay : ModSystem
             return;
         }
 
-        Rectangle startNewRun = timerUI.CookieCutter(new(0f, buttonsAbove ? -1.25f : 1.25f), new(1f, 0.125f));
+        Rectangle startNewRun = CenteredRectangle(referencePoint + (subBoxSize * Vector2.UnitY * sign), subBoxSize);
         Rectangle exportRun = startNewRun.CookieCutter(new(0f, 2.5f), Vector2.One);
 
         bool startNewHovered = startNewRun.Contains(mousePos);
@@ -222,7 +251,7 @@ public class RunDisplay : ModSystem
 
     public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
     {
-        if (!DisplayTimer || (!RunTracker.RunActive && RunTracker.LastCompletedRun is null))
+        if (!RunTracker.RunActive && RunTracker.LastCompletedRun is null)
             return;
 
         int layerIndex = SpeedrunConfig.Instance.ShowOnTop ? layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory")) : 0;
@@ -237,11 +266,24 @@ public class RunDisplay : ModSystem
             }, InterfaceScaleType.None));
     }
 
-    public static Rectangle DrawSpeedrunTimer(SpriteBatch spriteBatch, Vector2 screenSize, Point mousePos)
+    public static Rectangle? DrawSpeedrunTimer(SpriteBatch spriteBatch, Vector2 screenSize, Point mousePos)
     {
+        if (SpeedrunKeybinds.ToggleSpeedrunUI.RealJustPressed())
+            DisplayTimer = !DisplayTimer;
+
+        if (SpeedrunKeybinds.ToggleSplitDisplay.RealJustPressed())
+            SplitDisplay = (SplitDisplayMode)((int)(SplitDisplay + 1) % 3);
+
+        if (!DisplayTimer)
+            return null;
+
+        Color uiColor = SpeedrunConfig.Instance.SpeedrunUIColor;
         Vector2 drawTopCenter = screenSize * SpeedrunConfig.Instance.SpeedrunUIPos;
         Vector2 drawSize = new Vector2(200f, 100f) * SpeedrunConfig.Instance.SpeedrunUIScale;
         int splits = SpeedrunConfig.Instance.SplitsToShow;
+
+        if (splits > 0 && SplitDisplay != SplitDisplayMode.All)
+            splits = SplitDisplay == SplitDisplayMode.One ? 1 : 0;
 
         Rectangle drawArea = CenteredRectangle(drawTopCenter + new Vector2(0f, drawSize.Y * 0.5f), drawSize);
         Vector2 splitSize = new(drawArea.Width, drawArea.Height * 0.375f);
@@ -251,19 +293,34 @@ public class RunDisplay : ModSystem
         Rectangle timerBox = drawArea.CookieCutter(new(0f, 0.375f), new Vector2(1f, 0.595f));
         Rectangle igtBox = drawArea.CookieCutter(new(0f, 0.15f), new(0.96f, 0.4f));
         Rectangle rtaBox = drawArea.CookieCutter(new(0f, 0.7f), new(0.96f, 0.25f));
+        Rectangle titleArea = titleBox.Scale(new Vector2(1.05f, 1.25f));
 
         drawArea.Height += splitsOffset;
         timerBox.Y += splitsOffset;
         igtBox.Y += splitsOffset;
         rtaBox.Y += splitsOffset;
 
-        spriteBatch.DrawRectangle(drawArea, Color.Black * 0.45f, fill: true);
-        spriteBatch.DrawRectangle(titleBox.Scale(new Vector2(1.05f, 1.25f)), Color.Black * 0.35f, fill: true);
-        spriteBatch.DrawRectangle(timerBox, Color.Black * 0.35f, fill: true);
+        if (SpeedrunConfig.Instance.DisplayRunTitle)
+        {
+            spriteBatch.DrawRectangle(drawArea, uiColor * 0.45f, fill: true);
+            spriteBatch.DrawRectangle(timerBox, uiColor * 0.35f, fill: true);
+            spriteBatch.DrawRectangle(titleArea, uiColor * 0.35f, fill: true);
 
-        string runTitle = RunTracker.RunActive ?
-            SpeedrunDisplay.AllCategories[RunTracker.RunCategory].LocalizationKey.Fetch() :
-            RunTracker.LastCompletedRun is not null ? RunTracker.LastCompletedRun.Value.Category.LocalizationKey.Fetch() : "---";
+            string runTitle = RunTracker.RunActive ?
+                SpeedrunDisplay.AllCategories[RunTracker.RunCategory].LocalizationKey.Fetch() :
+                RunTracker.LastCompletedRun is not null ? RunTracker.LastCompletedRun.Value.Category.LocalizationKey.Fetch() : "---";
+
+            spriteBatch.DrawOutlinedStringInRectangle(titleBox, JetbrainsMono, Color.White, Color.Black, runTitle);
+        }
+
+        else
+        {
+            drawArea.Y += titleArea.Height;
+            drawArea.Height -= titleArea.Height;
+
+            spriteBatch.DrawRectangle(drawArea, uiColor * 0.45f, fill: true);
+            spriteBatch.DrawRectangle(timerBox, uiColor * 0.35f, fill: true);
+        }
 
         TimeSpan igtTime = RunTracker.RunActive ?
             TimeSpan.FromSeconds(RunTracker.IGT_FrameCounter / 60f) :
@@ -273,14 +330,12 @@ public class RunDisplay : ModSystem
             (RunTracker.IGT_FrameCounter > 0 ? DateTime.UtcNow - RunTracker.RTA_RunStart : TimeSpan.Zero) :
             RunTracker.LastCompletedRun?.RTA ?? TimeSpan.Zero;
 
-        spriteBatch.DrawOutlinedStringInRectangle(titleBox, JetbrainsMono, Color.White, Color.Black, runTitle);
-
         Color igtColor = RunTracker.LastCompletedRun is null ? Color.White : Main.DiscoColor;
         string igt = igtTime.Format(fractionalSeconds: true);
-        spriteBatch.DrawOutlinedStringInRectangle(igtBox, JetbrainsMono, igtColor, Color.Black, igt, alignment: Utils.TextAlignment.Right);
+        spriteBatch.DrawOutlinedStringInRectangle(igtBox, JetbrainsMono, igtColor, Color.Black, igt, alignment: TextAlignment.Right);
 
         string rta = rtaTime.Format(fractionalSeconds: false);
-        spriteBatch.DrawOutlinedStringInRectangle(rtaBox, JetbrainsMono, Color.DarkGray, Color.Black, rta, alignment: Utils.TextAlignment.Right);
+        spriteBatch.DrawOutlinedStringInRectangle(rtaBox, JetbrainsMono, Color.DarkGray, Color.Black, rta, alignment: TextAlignment.Right);
 
         if (splits == 0)
             goto MoveUI;
@@ -294,7 +349,7 @@ public class RunDisplay : ModSystem
             if (!runSplit.HasValue)
             {
                 spriteBatch.DrawOutlinedStringInRectangle(iconArea, JetbrainsMono, Color.DarkGray, Color.Black, "-", 1f);
-                spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.DarkGray, Color.Black, "-:-:-", 1f, alignment: Utils.TextAlignment.Right);
+                spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.DarkGray, Color.Black, "-:-:-", 1f, alignment: TextAlignment.Right);
                 return;
             }
 
@@ -307,8 +362,8 @@ public class RunDisplay : ModSystem
             string splitTime = splitRunTime.Format(fractionalSeconds: false);
 
             spriteBatch.Draw(splitIcon, iconArea.Center.ToVector2(), null, Color.White, 0f, splitIcon.Size() * 0.5f, scale, SpriteEffects.None, 0f);
-            spriteBatch.DrawOutlinedStringInRectangle(textArea, JetbrainsMono, Color.White, Color.Black, splitText, alignment: Utils.TextAlignment.Left);
-            spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.White, Color.Black, splitTime, alignment: Utils.TextAlignment.Right);
+            spriteBatch.DrawOutlinedStringInRectangle(textArea, JetbrainsMono, Color.White, Color.Black, splitText, alignment: TextAlignment.Left);
+            spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.White, Color.Black, splitTime, alignment: TextAlignment.Right);
         }
 
         int maxSplits = RunTracker.LastCompletedRun?.Splits.Count ?? RunTracker.CurrentSplits?.Count ?? 0;
@@ -336,7 +391,7 @@ public class RunDisplay : ModSystem
             splitBox = splitBox.CookieCutter(new(0f, 2.5f), Vector2.One);
             
             if (i % 2 == 1)
-                spriteBatch.DrawRectangle(splitBox.CookieCutter(Vector2.Zero, new(1.05f, 1.02f)), Color.Black * 0.2f, fill: true);
+                spriteBatch.DrawRectangle(splitBox.CookieCutter(Vector2.Zero, new(1.05f, 1.02f)), uiColor * 0.2f, fill: true);
 
             split = runSplits.MoveNext() ? runSplits.Current : null;
             DrawSplit(splitBox, split);

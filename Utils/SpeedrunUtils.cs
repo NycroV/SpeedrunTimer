@@ -3,8 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Terraria;
+using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -23,6 +26,12 @@ public static partial class SpeedrunUtil
 
     private static readonly FieldInfo customEffectField = typeof(SpriteBatch).GetField("customEffect", BindingFlags.Instance | BindingFlags.NonPublic);
     private static readonly FieldInfo transformMatrixField = typeof(SpriteBatch).GetField("transformMatrix", BindingFlags.Instance | BindingFlags.NonPublic);
+
+    private static readonly PropertyInfo fullNameProperty = typeof(ModKeybind).GetProperty("FullName", BindingFlags.Instance | BindingFlags.NonPublic);
+    public static string FullName(this ModKeybind keybind) => (string)fullNameProperty.GetValue(keybind);
+
+    public static bool RunningFromMenu = false;
+    public static bool RealJustPressed(this ModKeybind keybind) => RunningFromMenu ? Main.keyState.GetPressedKeys().Except(Main.oldKeyState.GetPressedKeys()).Any(k => keybind.GetAssignedKeys(InputMode.Keyboard).Contains(k.ToString())) : keybind.JustPressed;
 
     public static void GetDrawParameters(this SpriteBatch spriteBatch,
         out BlendState blendState,

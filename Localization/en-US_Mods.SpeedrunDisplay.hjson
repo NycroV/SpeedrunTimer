@@ -119,6 +119,11 @@ Configs: {
 			Tooltip: Whether or not to show the run category at the top of the timer
 		}
 
+		DisplaySplitNames: {
+			Label: Display Split Names
+			Tooltip: Whether or not to show split names on the timer
+		}
+
 		SpeedrunUIScale: {
 			Label: Speedrun UI Scale
 			Tooltip: The scale at which to draw the speedrun timer UI

@@ -1,6 +1,4 @@
-﻿using SpeedrunDisplay.Systems;
-using System.Reflection;
-using Terraria.GameInput;
+﻿using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace SpeedrunDisplay.Config;
@@ -18,13 +16,5 @@ public class SpeedrunKeybinds : ModSystem
     {
         ToggleSpeedrunUI = KeybindLoader.RegisterKeybind(Mod, "ToggleSpeedrunUI", Microsoft.Xna.Framework.Input.Keys.None);
         ToggleSplitDisplay = KeybindLoader.RegisterKeybind(Mod, "ToggleSplitDisplay", Microsoft.Xna.Framework.Input.Keys.None);
-    }
-}
-
-public class SpeedrunKeybindsPlayer : ModPlayer
-{
-    public override void ProcessTriggers(TriggersSet triggersSet)
-    {
-        
     }
 }

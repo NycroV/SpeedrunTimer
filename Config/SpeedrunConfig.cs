@@ -52,6 +52,9 @@ public class SpeedrunConfig : ModConfig
     [DefaultValue(true)]
     public bool DisplayRunTitle { get; set; }
 
+    [DefaultValue(true)]
+    public bool DisplaySplitNames { get; set; }
+
     [DefaultValue(1f)]
     [Range(0.1f, 3f)]
     public float SpeedrunUIScale { get; set; }

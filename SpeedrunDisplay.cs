@@ -53,8 +53,8 @@ public class SpeedrunDisplay : Mod
         {
             ["KingSlime"] = new(GetKey("Splits.KingSlime"), BossHead(7), () => NPC.downedSlimeKing),
             ["EyeOfCthulhu"] = new(GetKey("Splits.EyeOfCthulhu"), BossHead(0), () => NPC.downedBoss1),
-            ["EaterOfWorlds"] = new(GetKey("Splits.EaterOfWorlds"), BossHead(2), () => NPC.downedBoss2 && !WorldGen.crimson && !BundleEvils()),
-            ["BrainOfCthulhu"] = new(GetKey("Splits.BrainOfCthulhu"), BossHead(23), () => NPC.downedBoss2 && WorldGen.crimson && !BundleEvils()),
+            ["EaterOfWorlds"] = new(GetKey("Splits.EaterOfWorlds"), BossHead(2), () => DownedSystem.downedEaterOfWorlds && !BundleEvils()),
+            ["BrainOfCthulhu"] = new(GetKey("Splits.BrainOfCthulhu"), BossHead(23), () => DownedSystem.downedBrainOfCthulhu && !BundleEvils()),
             ["EvilBoss"] = new(GetKey("Splits.EvilBoss"), SpeedrunAsset("EvilBossIcon"), () => NPC.downedBoss2 && BundleEvils()),
             ["QueenBee"] = new(GetKey("Splits.QueenBee"), BossHead(14), () => NPC.downedQueenBee),
             ["Deerclops"] = new(GetKey("Splits.Deerclops"), BossHead(39), () => NPC.downedDeerclops),
@@ -159,7 +159,7 @@ public class SpeedrunDisplay : Mod
 
             ["TorchGod"] = new(GetKey("Splits.TorchGod"), ItemSprite(ItemID.TorchGodsFavor), () => Extended() && Main.LocalPlayer.unlockedBiomeTorches),
             ["OldOnesArmy"] = new(GetKey("Splits.OldOnesArmy"), SpeedrunAsset("OldOnesArmy"), () => Extended() && RunTracker.RunCategory == "OldOnesArmy" && DD2Event.DownedInvasionAnyDifficulty),
-            ["AllAchievements"] = new(GetKey("Splits.AllAchievements"), SpeedrunAsset("AllBossesIcon"), () => Extended() && false), // TODO
+            // ["AllAchievements"] = new(GetKey("Splits.AllAchievements"), SpeedrunAsset("AllBossesIcon"), () => Extended() && false), // TODO
 
             ["PlatinumCoin"] = new(GetKey("Splits.PlatinumCoin"), ItemSprite(ItemID.PlatinumCoin), () => Extended() && RunTracker.RunCategory == "PlatinumCoin" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.PlatinumCoin)),
             ["DungeonGuardian"] = new(GetKey("Splits.DungeonGuardian"), BossHead(19), () => Extended() && DownedSystem.downedDungeonGuardian)
@@ -186,7 +186,7 @@ public class SpeedrunDisplay : Mod
         ["AllEventsAndBosses"] = new(GetKey("Categories.AllEventsAndBosses"), GetSplit("AllEventsAndBosses")),
         ["TorchGod"] = new(GetKey("Categories.TorchGod"), GetSplit("TorchGod")),
         ["OldOnesArmy"] = new(GetKey("Categories.OldOnesArmy"), GetSplit("OldOnesArmy")),
-        ["AllAchievements"] = new(GetKey("Categories.AllAchievements"), GetSplit("AllAchievements")),
+        //["AllAchievements"] = new(GetKey("Categories.AllAchievements"), GetSplit("AllAchievements")),
         ["PlatinumCoin"] = new(GetKey("Categories.PlatinumCoin"), GetSplit("PlatinumCoin")),
         ["DungeonGuardian"] = new(GetKey("Categories.DungeonGuardian"), GetSplit("DungeonGuardian")),
         ["GoblinArmy"] = new(GetKey("Categories.GoblinArmy"), GetSplit("GoblinArmy"))

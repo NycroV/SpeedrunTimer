@@ -17,6 +17,8 @@ namespace SpeedrunDisplay.Systems
         public static bool downedSolarEclipse = false;
 
         public static bool downedDungeonGuardian = false;
+        public static bool downedEaterOfWorlds = false;
+        public static bool downedBrainOfCthulhu = false;
 
         private static bool cachedSlimeRain = false;
         private static bool cachedBloodMoon = false;
@@ -85,6 +87,15 @@ namespace SpeedrunDisplay.Systems
         public override void OnKill(NPC npc)
         {
             UpdateNPC(ref DownedSystem.downedDungeonGuardian, NPCID.DungeonGuardian, npc);
+            UpdateNPC(ref DownedSystem.downedBrainOfCthulhu, NPCID.BrainofCthulhu, npc);
+
+            // EoW nonsense
+            if (npc.boss)
+            {
+                UpdateNPC(ref DownedSystem.downedEaterOfWorlds, NPCID.EaterofWorldsHead, npc);
+                UpdateNPC(ref DownedSystem.downedEaterOfWorlds, NPCID.EaterofWorldsBody, npc);
+                UpdateNPC(ref DownedSystem.downedEaterOfWorlds, NPCID.EaterofWorldsTail, npc);
+            }
         }
     }
 }

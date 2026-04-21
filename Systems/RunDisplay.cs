@@ -354,15 +354,26 @@ public class RunDisplay : ModSystem
             }
 
             Split split = runSplit.Value.Split;
+
+            if (SpeedrunConfig.Instance.DisplaySplitNames)
+            {
+                string splitText = split.LocalizationKey.Fetch();
+                spriteBatch.DrawOutlinedStringInRectangle(textArea, JetbrainsMono, Color.White, Color.Black, splitText, alignment: TextAlignment.Left);
+            }
+
+            else
+            {
+                timeArea.X -= textArea.Width;
+                timeArea.Width += textArea.Width;
+            }
+
             Texture2D splitIcon = split.Icon.Value;
             float scale = float.Min((float)iconArea.Width / splitIcon.Width, (float)iconArea.Height / splitIcon.Height);
 
-            string splitText = split.LocalizationKey.Fetch();
             TimeSpan splitRunTime = TimeSpan.FromSeconds(runSplit.Value.RunTime / 60f);
             string splitTime = splitRunTime.Format(fractionalSeconds: false);
 
             spriteBatch.Draw(splitIcon, iconArea.Center.ToVector2(), null, Color.White, 0f, splitIcon.Size() * 0.5f, scale, SpriteEffects.None, 0f);
-            spriteBatch.DrawOutlinedStringInRectangle(textArea, JetbrainsMono, Color.White, Color.Black, splitText, alignment: TextAlignment.Left);
             spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.White, Color.Black, splitTime, alignment: TextAlignment.Right);
         }
 

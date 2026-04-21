@@ -20,8 +20,6 @@ namespace SpeedrunDisplay.Systems;
 
 public class RunDisplay : ModSystem
 {
-    public static bool DisplayTimer { get; set; } = true;
-
     public enum SplitDisplayMode : byte
     {
         None,
@@ -29,17 +27,9 @@ public class RunDisplay : ModSystem
         All
     }
 
-    private static SplitDisplayMode? _splitDisplay = null;
-    public static SplitDisplayMode SplitDisplay
-    {
-        get
-        {
-            _splitDisplay ??= (SpeedrunKeybinds.ToggleSplitDisplay.GetAssignedKeys().Count == 0) ? SplitDisplayMode.All : SplitDisplayMode.One;
-            return _splitDisplay.Value;
-        }
+    public static bool DisplayTimer { get; set; } = true;
 
-        set => _splitDisplay = value;
-    }
+    public static SplitDisplayMode SplitDisplay { get; set; } = SplitDisplayMode.All;
 
     public static SpriteFont JetbrainsMono { get; set; } = ModContent.Request<SpriteFont>("SpeedrunDisplay/Assets/Fonts/JetbrainsMono", AssetRequestMode.ImmediateLoad).Value;
     public static Texture2D Arrow { get; set; } = ModContent.Request<Texture2D>("SpeedrunDisplay/Assets/Textures/Arrow", AssetRequestMode.ImmediateLoad).Value;
